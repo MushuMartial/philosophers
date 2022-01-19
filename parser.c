@@ -6,7 +6,7 @@
 /*   By: tmartial <tmartial@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 16:50:15 by tmartial          #+#    #+#             */
-/*   Updated: 2022/01/18 17:45:29 by tmartial         ###   ########.fr       */
+/*   Updated: 2022/01/19 13:42:19 by tmartial         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,23 +58,23 @@ size_t	ft_strlen(const char *s)
 	return (len);
 }
 
-int parser(int argc, char **argv, t_philo *philo)
+int parser(int argc, char **argv, t_data *data)
 {
-	philo->n_philo = ft_atoi(argv[1]);
-	philo->t_die = ft_atoi(argv[2]);
-	philo->t_eat = ft_atoi(argv[3]);
-	philo->t_sleep = ft_atoi(argv[4]);
+	data->n_philo = ft_atoi(argv[1]);
+	data->t_die = ft_atoi(argv[2]);
+	data->t_eat = ft_atoi(argv[3]);
+	data->t_sleep = ft_atoi(argv[4]);
 	if (argc == 6)
 	{
-		philo->n_philo_eat = ft_atoi(argv[5]);
-		if (philo->n_philo_eat == 0)
+		data->n_philo_eat = ft_atoi(argv[5]);
+		if (data->n_philo_eat == 0)
 		{
 			write(1, "Wrong Arguments\n", 16);
 			return (1);
 		}
 	}
-	if (philo->n_philo > 200 || philo->n_philo == 0 || philo->t_die < 60
-	|| philo->t_eat < 60 || philo->t_sleep < 60)
+	if (data->n_philo > 200 || data->n_philo == 0 || data->t_die < 60
+	|| data->t_eat < 60 || data->t_sleep < 60)
 	{
 		write(1, "Wrong Arguments\n", 16);
 		return (1);

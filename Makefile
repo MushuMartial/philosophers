@@ -1,4 +1,4 @@
-NAME = so_long
+NAME = philo
 SRC = main.c parser.c
 OBJ = $(SRC:.c=.o)
 

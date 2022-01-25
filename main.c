@@ -6,11 +6,12 @@
 /*   By: tmartial <tmartial@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/18 16:33:11 by tmartial          #+#    #+#             */
-/*   Updated: 2022/01/19 14:16:13 by tmartial         ###   ########.fr       */
+/*   Updated: 2022/01/25 12:15:50 by tmartial         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+/* eat sleep think*/
 
 /* memset, printf, malloc, free, write,
 usleep, gettimeofday, pthread_create,
@@ -21,28 +22,33 @@ pthread_mutex_unlock*/
 /* number_of_philosophers ,time_to_die ,time_to_eat,
 time_to_sleep ,[number_of_times_each_philosopher_must_eat]*/
 
-/* typedef struct s_philo {
-    
-    pthread_mutex_t		*lfork;
-    pthread_mutex_t		*rfork;
-    int alive;
-	int n_eat;
-}				t_philo;
+/*typedef struct s_philo
+{
+	int				id;
+	pthread_t		thread_id;
+	pthread_mutex_t	*rfork;
+	pthread_mutex_t	*lfork;
+	int				meals;
+	unsigned long	last_meal;
+	struct s_data	*env;
+}	t_philo;
 
-typedef struct s_data {
-	pthread_mutex_t    *fork;
-    pthread_mutex_t    lock;
-    pthread_t        thread;
-    t_philo            *philos;
-    int n_philo;
-    int t_die;
-    int t_eat;
-    int t_sleep;
-    int n_philo_eat;
-    unsigned long start; //gettime
-    
-}				t_data;*/
-int	init(t_data *data, int argc);
+typedef struct s_data
+{
+	int				nbr;
+	int				time_die;
+	int				time_eat;
+	int				time_sleep;
+	int				cycles;
+	int				full;
+	int				stop;
+	t_philo			*philos;
+	pthread_mutex_t	*forks;
+	pthread_mutex_t	write;
+	pthread_mutex_t	eat;
+	unsigned long	start;
+}	t_data;*/
+
 
 int main(int argc, char **argv)
 {
@@ -55,6 +61,7 @@ int main(int argc, char **argv)
         if (parser(argc, argv, &data) == 1)
 			return (0);
         init(&data, argc);
+		forks_init(&data);
     }
     return (0);
 }
@@ -68,9 +75,11 @@ int	init(t_data *data, int argc)
 	data->forks = (pthread_mutex_t *)malloc(data->n_philo * sizeof(pthread_mutex_t));
     if (!data->philos || !data->forks)
         return (1);
+	
     while (i < data->n_philo)
     {
 		data->philos[i].alive = 1;
+		data->philos[i].id = i + 1;
 		if (argc == 6)
 			data->philos[i].n_eat = data->n_philo_eat;
 		pthread_mutex_init(&data->forks[i], NULL);

@@ -5,85 +5,117 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmartial <tmartial@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/18 16:33:11 by tmartial          #+#    #+#             */
-/*   Updated: 2022/01/25 12:15:50 by tmartial         ###   ########.fr       */
+/*   Created: 2022/01/30 15:22:32 by tmartial          #+#    #+#             */
+/*   Updated: 2022/01/31 14:16:02 by tmartial         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-/* eat sleep think*/
 
-/* memset, printf, malloc, free, write,
-usleep, gettimeofday, pthread_create,
-pthread_detach, pthread_join, pthread_mutex_init,
-pthread_mutex_destroy, pthread_mutex_lock,
-pthread_mutex_unlock*/
-
-/* number_of_philosophers ,time_to_die ,time_to_eat,
-time_to_sleep ,[number_of_times_each_philosopher_must_eat]*/
-
-/*typedef struct s_philo
+int	main(int argc, char **argv)
 {
-	int				id;
-	pthread_t		thread_id;
-	pthread_mutex_t	*rfork;
-	pthread_mutex_t	*lfork;
-	int				meals;
-	unsigned long	last_meal;
-	struct s_data	*env;
-}	t_philo;
+	t_data	data;
 
-typedef struct s_data
-{
-	int				nbr;
-	int				time_die;
-	int				time_eat;
-	int				time_sleep;
-	int				cycles;
-	int				full;
-	int				stop;
-	t_philo			*philos;
-	pthread_mutex_t	*forks;
-	pthread_mutex_t	write;
-	pthread_mutex_t	eat;
-	unsigned long	start;
-}	t_data;*/
-
-
-int main(int argc, char **argv)
-{
-    t_data data;
-    
-    if (argc > 6 || argc < 5)
-        write(1, "Wrong Arguments\n", 16);
-    else
-    {
-        if (parser(argc, argv, &data) == 1)
-			return (0);
-        init(&data, argc);
-		forks_init(&data);
-    }
-    return (0);
+	if (argc > 6 || argc < 5)
+		return (p_error(2));
+	else if (parser(argc, argv, &data) == 1)
+		return (1);
+	else if (forks_init(&data) == 1)
+		return (free_all(&data));
+	else if (philos_init(&data) == 1)
+		return (free_all(&data));
+	else if (data.n_philos == 1)
+		one_philo(&data);
+	else if (start_threads(&data) == 1)
+		return (free_all(&data));
+	free_all(&data);
+	return (0);
 }
 
-int	init(t_data *data, int argc)
+int	start_threads(t_data *data)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    data->philos = (t_philo *)malloc(data->n_philo * sizeof(t_philo));
-	data->forks = (pthread_mutex_t *)malloc(data->n_philo * sizeof(pthread_mutex_t));
-    if (!data->philos || !data->forks)
-        return (1);
-	
-    while (i < data->n_philo)
-    {
-		data->philos[i].alive = 1;
-		data->philos[i].id = i + 1;
-		if (argc == 6)
-			data->philos[i].n_eat = data->n_philo_eat;
-		pthread_mutex_init(&data->forks[i], NULL);
+	i = 0;
+	data->start = current_time();
+	while (i < data->n_philos)
+	{
+		data->philos[i].last_meal = current_time();
+		if (pthread_create(&data->philos[i].pth_id, NULL, routine,
+				&(data->philos[i])))
+			return (p_error(4));
 		i++;
-    }
-	return (0);
+	}
+	check_threads(data);
+	pthread_mutex_unlock(&(data->write));
+	i = 0;
+	while (i < data->n_philos)
+	{
+		if (pthread_join(data->philos[i].pth_id, NULL) != 0)
+			return (p_error(4));
+		i++;
+	}
+	return (1);
+}
+
+void	*routine(void *arg)
+{
+	t_philo	*philo;
+
+	philo = arg;
+	if (philo->id % 2 != 0)
+		ft_usleep(2);
+	while (philo->data->stop == 0 && philo->data->full == 0)
+	{
+		pthread_mutex_lock(philo->rfork);
+		message(philo, "has taken a fork");
+		pthread_mutex_lock(philo->lfork);
+		message(philo, "has taken a fork");
+		philo->last_meal = current_time();
+		message(philo, "is eating");
+		ft_usleep(philo->data->time_eat);
+		pthread_mutex_unlock(philo->lfork);
+		pthread_mutex_unlock(philo->rfork);
+		philo->meals++;
+		message(philo, "is sleeping");
+		ft_usleep(philo->data->time_sleep);
+		message(philo, "is thinking");
+	}
+	return (NULL);
+}
+
+void	check_threads(t_data *data)
+{
+	int	i;
+	int	count;
+
+	while (data->full == 0)
+	{
+		i = 0;
+		count = 0;
+		while (i < data->n_philos && data->stop == 0)
+		{
+			if ((int)(current_time() - data->philos[i].last_meal)
+			> data->time_die)
+			{
+				message(&(data->philos[i]), "is dead");
+				pthread_mutex_lock(&(data->write));
+				data->stop = 1;
+				return ;
+			}
+			if (data->philos[i].meals >= data->n_eat && data->n_eat != 0)
+				count++;
+			i++;
+		}
+		if (count == i)
+			check_eat(data);
+	}
+}
+
+void	check_eat(t_data *data)
+{
+	data->full = 1;
+	data->stop = 1;
+	pthread_mutex_lock(&(data->write));
+	printf("All the philos ate at least %d times\n", data->n_eat);
 }

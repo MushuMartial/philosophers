@@ -1,5 +1,5 @@
 NAME = philo
-SRC = main.c parser.c libft.c
+SRC = main.c parser.c libft.c utils.c
 OBJ = $(SRC:.c=.o)
 
 CFLAGS = -Wall -Wextra -Werror

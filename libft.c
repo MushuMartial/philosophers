@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmartial <tmartial@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/25 11:56:58 by tmartial          #+#    #+#             */
-/*   Updated: 2022/01/25 11:57:17 by tmartial         ###   ########.fr       */
+/*   Created: 2022/01/30 12:58:56 by tmartial          #+#    #+#             */
+/*   Updated: 2022/01/30 12:58:56 by tmartial         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	verif_long(const char *str, int i)
 			return (0);
 	}
 	if (str[i] != '\0')
-		return(0);
+		return (0);
 	return ((int)(num));
 }
 
@@ -46,14 +46,4 @@ int	ft_atoi(const char *str)
 	}
 	num = (verif_long(str, i));
 	return (num);
-}
-
-size_t	ft_strlen(const char *s)
-{
-	int	len;
-
-	len = 0;
-	while (s[len] != '\0')
-		len++;
-	return (len);
 }

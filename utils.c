@@ -26,7 +26,7 @@ void	ft_usleep(int msec)
 
 	time = current_time();
 	while (current_time() < time + msec)
-		usleep(10);
+		usleep(1);
 }
 
 void	message(t_philo *philo, char *str)
@@ -34,7 +34,7 @@ void	message(t_philo *philo, char *str)
 	unsigned long	time;
 
 	pthread_mutex_lock(&(philo->data->write));
-	if (philo->data->stop == 0 && philo->data->full == 0)
+	if (philo->data->stop == 0)
 	{
 		time = current_time() - philo->data->start;
 		printf("%lu %d %s\n", time, philo->id, str);

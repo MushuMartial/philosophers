@@ -19,7 +19,6 @@ int	parser(int argc, char **argv, t_data *data)
 	data->time_eat = ft_atoi(argv[3]);
 	data->time_sleep = ft_atoi(argv[4]);
 	data->stop = 0;
-	data->full = 0;
 	if (argc == 6)
 	{
 		data->n_eat = ft_atoi(argv[5]);

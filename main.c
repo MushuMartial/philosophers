@@ -65,7 +65,7 @@ void	*routine(void *arg)
 	philo = arg;
 	if (philo->id % 2 != 0)
 		ft_usleep(2);
-	while (philo->data->stop == 0 && philo->data->full == 0)
+	while (philo->data->stop == 0)
 	{
 		pthread_mutex_lock(philo->rfork);
 		message(philo, "has taken a fork");
@@ -89,7 +89,7 @@ void	check_threads(t_data *data)
 	int	i;
 	int	count;
 
-	while (data->full == 0)
+	while (data->stop == 0)
 	{
 		i = 0;
 		count = 0;
@@ -114,7 +114,6 @@ void	check_threads(t_data *data)
 
 void	check_eat(t_data *data)
 {
-	data->full = 1;
 	data->stop = 1;
 	pthread_mutex_lock(&(data->write));
 	printf("All the philos ate at least %d times\n", data->n_eat);

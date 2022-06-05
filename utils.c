@@ -26,7 +26,7 @@ void	ft_usleep(int msec)
 
 	time = current_time();
 	while (current_time() < time + msec)
-		usleep(1);
+		usleep(500);
 }
 
 void	message(t_philo *philo, char *str)
